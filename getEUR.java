@@ -22,12 +22,12 @@ public class getEUR {
         Elements body = doc.select("div.tripmoneySection__products");
         for(Element e : body.select("a")) {
             //extract text value of selected elements, parse into doubles. Commas replaced with dots for formatting
-            buy_eur.add(Double.parseDouble(e.select("div:nth-child(3) > div:nth-child(1) > div:nth-child(3) > span:nth-child(1)").text().replaceAll(",", ".")));
-            // addEdge("eur", co tam znalazł, {waga, skąd się wzięła ta waga np. URL lub ID kantora})
+            temp_buy = Double.parseDouble(e.select("div:nth-child(3) > div:nth-child(1) > div:nth-child(3) > span:nth-child(1)").text().replaceAll(",", "."));
             // Weight.neglogvalue, Weight.currencyExchangeSource
             // neglogvalue = log(exchangeValue) * -1
-            sell_eur.add(Double.parseDouble(e.select("div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > span:nth-child(1)").text().replaceAll("\\.", "").replaceAll(",", ".")));
-            short_eur.add(e.select("div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span:nth-child(2)").text());
+            temp_sell = Double.parseDouble(e.select("div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > span:nth-child(1)").text().replaceAll("\\.", "").replaceAll(",", "."));
+            short_name = e.select("div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span:nth-child(2)").text();
+            Graph.addEdge("EUR", short_name, [waga, skąd się wzięła ta waga np. URL lub ID kantora])
         }
         while (!buy_eur.isEmpty()) {
             double[] toMap = { buy_eur.remove(0), sell_eur.remove(0) };
