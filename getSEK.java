@@ -1,7 +1,4 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,25 +6,32 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class getSEK {
-    public static Map<String, double[]> GetSEK(Map<String, double[]> final_sek) throws IOException {
-        List<Double> buy_sek = new ArrayList<Double>();
-        List<Double> sell_sek = new ArrayList<Double>();
-        List<String> short_sek = new ArrayList<String>();
+    /**
+     * !Important! This currency exchange uses inconsistent formatting. Some currencies are written as 1:1 unit, other times
+     * it's 100:100 ratio. This messes up the purchasing power.
+     * TODO: compare exchange value with a currency exchange API to see which exchange is inconsistent and fix it to 1:1 ratio.
+     * @param myGraph
+     * @throws IOException
+     */
+    public static void GetSEK(Graph myGraph) throws IOException {
+        /**
+         * Ignores first element of the table (headings), trims whitespaces
+         */
+        double tempBuySDK;
+        double tempSellSDK;
+        String shortName;
         String url = "https://www.swedbank.se/privat/rantor-priser-och-kurser/valutakurser-betalningar.html";
         Document doc = Jsoup.connect(url).get();
         
         Elements body = doc.select("tbody > tr:nth-child(-n+2)");
         //Skip first row
         for(Element e : body.select("tr")) {
-            //extract text value of selected elements, parse into doubles. Commas replaced with dots for formatting
-            buy_sek.add(Double.parseDouble(e.select("td:nth-child(4)").text().trim()));
-            sell_sek.add(Double.parseDouble(e.select("td:nth-child(5)").text().trim()));
-            short_sek.add(e.select("td:nth-child(3)").text().trim());
+            tempBuySDK = Double.parseDouble(e.select("td:nth-child(4)").text().trim());
+            tempSellSDK = 1 / Double.parseDouble(e.select("td:nth-child(5)").text().trim());
+            shortName = e.select("td:nth-child(3)").text().trim();
+
+            myGraph.insertOrImproveEdge(new Edge("SEK", shortName, arbitrage.encodeRatio(tempSellSDK), url));
+            myGraph.insertOrImproveEdge(new Edge(shortName, "SEK", arbitrage.encodeRatio(tempBuySDK), url));
         }
-        while(!buy_sek.isEmpty()) {
-            double[] toMap = { buy_sek.remove(0), sell_sek.remove(0) };
-            final_sek.put(short_sek.remove(0), toMap);
-        }
-        return final_sek;
     }
 }
