@@ -6,7 +6,7 @@ public class arbitrage {
      * arbitrage.java finds negative cycle given currency exchanges scraped online, or for future development, provides a base and a guide to calculate a negative cycle for 
      * any graph that uses String source, String target and double weight.
      * @author Piotr Wojciechowski
-     * @since 12/07/2020
+     * Released 12/07/2020
      */
     public static void main(String args[]) throws IOException {
         
